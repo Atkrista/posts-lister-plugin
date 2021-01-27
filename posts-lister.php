@@ -51,7 +51,9 @@ function return_posts_list($atts)
     $num_of_posts = esc_attr($atts['num_of_posts']);
 
     //layout type
-    $layout_type = esc_attr($atts['layout']);
+    //add list-view class if the layout isnt specified as grid
+    $layout_type = strcmp(esc_attr($atts['layout']), 'grid')?'list-view':'';
+   
 
     $args = array('post_type'=>'post','post_status' => 'publish','order'=>$order, 'orderby'=>$orderby);
     $query = new WP_Query($args);
@@ -69,7 +71,6 @@ function return_posts_list($atts)
             $img_url = plugins_url("/assets/cat.jpg", __FILE__);
 
             $content .= "
-                <div class = 'row'>
                 <div class = 'col-12 col-md col-lg-4'>
                     <div class = 'card'>
                     <img class = 'card-img-top' src = {$img_url} alt = 'Card image cap'>
@@ -80,7 +81,6 @@ function return_posts_list($atts)
                     </div>
                     </div>
                 </div>
-                </div>
             ";
             //increment after each retrieved post
             $post_count++;
@@ -89,65 +89,8 @@ function return_posts_list($atts)
     }
     $query->wp_reset_postdata();
     $output = "
-    <div class = 'container grid-container list-view'>
-    {$content}
-    </div>";
-    return $output;
-}
-
-function return_posts_grid($atts)
-{   
-    $content = '';
-    $atts = shortcode_atts(array('num_of_posts'=>'15', 'order_by'=>'date','order' => 'DESC'), $atts, 'posts_lister');
-
-    //in asc or desc order
-    $order = esc_attr($atts['order']);
-
-    //order by this attribute
-    $orderby = esc_attr($atts['order_by']);
-
-    //number of posts to retrieve
-    $num_of_posts = esc_attr($atts['num_of_posts']);
-
-    // //layout type
-    // $layout_type = esc_attr($atts['layout']);
-
-    $args = array('post_type'=>'post','post_status' => 'publish','order'=>$order, 'orderby'=>$orderby);
-    $query = new WP_Query($args);
-    if($query->have_posts()) {
-        $post_count = 0;
-        while($query->have_posts() and $post_count < $num_of_posts) {
-            //get relevant data from each post
-            $query->the_post();
-            $title = get_the_title();
-            $excerpt = get_the_excerpt();
-            $author = get_the_author();
-            $published = get_the_date();
-            $post_id = get_the_id();
-            //placeholder image url
-            $img_url = plugins_url("/assets/cat.jpg", __FILE__);
-
-            $content .= "
-            <div class = 'col-12 col-md-6 col-lg-4'>
-                <div class = 'card'>
-                    <img class = 'card-img-top' src = {$img_url} alt = 'Card image cap'>
-                    <div class = 'card-body'>  
-                    <h5 class = 'card-title'>{$title}</h5>
-                    <p class = 'card-text'>by {$author}, on {$published} </p>
-                    <p class = 'card-text'>{$excerpt}</p>
-                    </div>
-                </div>
-            </div>
-            ";
-            //increment after each retrieved post
-            $post_count++;
-            
-        }
-    }
-    $query->wp_reset_postdata();
-    $output = "
-    <div class ='container grid-container'>
-    <div class ='row'>
+    <div class = 'container grid-container {$layout_type}'>
+    <div class = 'row'>
     {$content}
     </div>
     </div>";
@@ -159,10 +102,7 @@ register_activation_hook(__FILE__, 'posts_lister_activate');
 register_deactivation_hook(__FILE__, 'posts_lister_deactivate');
 
 //register shortcode for grid
-add_shortcode('posts_lister', 'return_posts_grid' );
-
-//register shortcode for list
-add_shortcode('posts_grid', 'return_posts_list');
+add_shortcode('posts_lister', 'return_posts_list' );
 
 //register custom scripts and styles
 add_action('wp_enqueue_scripts', 'posts_lister_enqueue_scripts');
