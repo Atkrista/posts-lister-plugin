@@ -1,0 +1,2 @@
+<?php
+// completely remove plugin
