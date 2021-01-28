@@ -110,4 +110,14 @@ add_action('wp_enqueue_scripts', 'posts_lister_enqueue_scripts');
 //limit excerpt length to 20 words
 add_filter('excerpt_length', 'custom_excerpt_length', 999);
 
+//include the widget class
+require_once plugin_dir_path(__FILE__) . 'posts-lister-widget.php' ;
+
+//register the widget
+add_action('widgets_init', function() {
+    register_widget('Posts_Lister_Widget');
+});
+
+
+
 
