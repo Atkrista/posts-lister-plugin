@@ -51,7 +51,7 @@ function return_posts_list($atts)
     $num_of_posts = esc_attr($atts['num_of_posts']);
 
     //layout type
-    //add list-view class if the layout isnt specified as grid
+    //add list-view class if the layout isn't specified as grid
     $layout_type = strcmp(esc_attr($atts['layout']), 'grid')?'list-view':'';
    
 
